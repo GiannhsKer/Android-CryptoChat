@@ -1,11 +1,9 @@
 package com.example.myapplication.nav
 
 import androidx.navigation.NavHostController
-import com.example.myapplication.nav.Destination.Home
-import com.example.myapplication.nav.Destination.Login
-import com.example.myapplication.nav.Destination.Register
+import com.example.myapplication.nav.Destination
 
-
+import android.util.Log
 
 object Destination {
     const val AuthenticationOption = "authenticationOption"
@@ -18,7 +16,7 @@ object Destination {
 
 class Action(navController: NavHostController) {
     val home: () -> Unit = {
-        navController.navigate(Home) {
+        navController.navigate(Destination.Home) {
             popUpTo(navController.graph.startDestinationId) {
                 inclusive = true
             }
@@ -26,8 +24,8 @@ class Action(navController: NavHostController) {
             restoreState = false
         }
     }
-    val login: () -> Unit = { navController.navigate(Login) }
-    val register: () -> Unit = { navController.navigate(Register) }
+    val login: () -> Unit = { navController.navigate(Destination.Login) }
+    val register: () -> Unit = { navController.navigate(Destination.Register) }
     val navigateBack: () -> Unit = { navController.popBackStack() }
     val chatRoomList: () -> Unit = {
         navController.navigate(Destination.ChatRoomList) {
@@ -36,12 +34,6 @@ class Action(navController: NavHostController) {
             restoreState = false
         }
     }
-//    val chatRoomList: () -> Unit = {
-//        navController.navigate(Destination.ChatRoomList) {
-//            launchSingleTop = true
-//            restoreState = false
-//        }
-//    }
     val chatRoom: (String) -> Unit = { roomId ->
         navController.navigate("chatRoom/$roomId")
     }

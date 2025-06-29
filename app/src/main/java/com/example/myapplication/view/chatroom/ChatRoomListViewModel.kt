@@ -10,6 +10,9 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import com.google.firebase.auth.ktx.auth
 
+import android.util.Log
+import kotlinx.coroutines.flow.map
+
 class ChatRoomListViewModel : ViewModel() {
     private val _chatRooms = MutableStateFlow<List<ChatRoom>>(emptyList())
     val chatRooms: StateFlow<List<ChatRoom>> = _chatRooms
@@ -21,32 +24,23 @@ class ChatRoomListViewModel : ViewModel() {
     }
 
     fun fetchChatRooms() {
-        db.collection("chatRooms").addSnapshotListener { value, _ ->
-            val rooms = value?.documents?.mapNotNull { doc ->
-                val creatorId = doc.getString("creator") ?: "Unknown"
-                var creatorDisplay = creatorId
-                if (creatorId != "Unknown") {
-                    // Try to get username from users collection
+        db.collection("chatRooms").addSnapshotListener { chatRooms, _ ->
+            _chatRooms.value = chatRooms?.documents?.map { chatRoom ->
+                var creatorId = chatRoom.getString("creator") ?: "Unknown"
+                if (creatorId != "Unknown")
                     // This is a blocking call, but for demo purposes, we use the id as fallback
                     // In production, you should cache usernames or denormalize
-                    // Here, we just display the id or 'You' if current user
-                    val currentUid = Firebase.auth.currentUser?.uid
-                    if (creatorId == currentUid) {
-                        creatorDisplay = "You"
-                    } else {
-                        // Optionally, you could fetch username from users collection here
-                        // But for now, just show the UID
-                        creatorDisplay = creatorId
-                    }
-                }
-                ChatRoom(doc.id, creatorDisplay)
+                    // Optionally, you could fetch username from users collection here
+                    // But for now, just show the UID
+                    creatorId = if (creatorId == Firebase.auth.currentUser?.uid) "You" else creatorId
+                ChatRoom(chatRoom.id, creatorId)
             } ?: emptyList()
-            _chatRooms.value = rooms
         }
     }
 
     fun createChatRoom(name: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
         if (name.isBlank()) {
+            Log.e("ChatRoomVM", "Room name is blank, calling onError") // Add this
             onError("Room name cannot be empty")
             return
         }
@@ -61,6 +55,7 @@ class ChatRoomListViewModel : ViewModel() {
             val username = userDoc.getString("username") ?: "Unknown"
             db.collection("chatRooms").document(trimmed).get().addOnSuccessListener { doc ->
                 if (doc.exists()) {
+                    Log.e("ChatRoomVM", "Room name already exists, calling onError") // Add this
                     onError("Room name already exists")
                 } else {
                     db.collection("chatRooms").document(trimmed).set(
@@ -72,7 +67,9 @@ class ChatRoomListViewModel : ViewModel() {
                         .addOnSuccessListener { onSuccess() }
                         .addOnFailureListener { onError("Failed to create room") }
                 }
-            }.addOnFailureListener { onError("Failed to check room name") }
+            }.addOnFailureListener {
+                Log.e("ChatRoomVM", "Failed to check room name, calling onError", it) // Add this
+                onError("Failed to check room name") }
         }.addOnFailureListener { onError("Failed to fetch user info") }
     }
 }
