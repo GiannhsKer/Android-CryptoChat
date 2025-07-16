@@ -62,8 +62,8 @@ fun NavComposeApp(chatRoomListViewModel: ChatRoomListViewModel = viewModel()) {
                 Destination.ChatRoom
 //                arguments = listOf(navArgument("roomId") { type = NavType.StringType })
             ) { backStackEntry ->
-//                val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
-                val roomId = "Maths"
+                val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
+//                val roomId = "Maths"
                 HomeView(
                     roomId = roomId,
                     onBackClick = actions.chatRoomList // Pass navigation to chat room list
