@@ -96,7 +96,7 @@ fun ChatRoomListView(
                             )
                         }
                     },
-                    colors = TopAppBarDefaults.smallTopAppBarColors(
+                    colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = Color(0x2196F3FF)
                     )
                 )
