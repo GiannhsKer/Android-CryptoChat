@@ -144,64 +144,48 @@ fun ChatRoomListView(
         }
     }
     if (showDialog) {
-        CreateChatRoomDialog(
-            newRoomName = newRoomName,
-            errorText = errorText,
-            onRoomNameChange = { newRoomName = it },
-            onCreateRoom = { name ->
-                chatRoomListViewModel.createChatRoom(
-                    name,
-                    onSuccess = { resetDialogState() },
-                    onError = { error -> errorText = error }
-                )
-            },
-            onDismiss = { resetDialogState() }
-        )
-    }
-}
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun CreateChatRoomDialog(
-        newRoomName: String,
-        errorText: String,
-        onRoomNameChange: (String) -> Unit,
-        onCreateRoom: (String) -> Unit,
-        onDismiss: () -> Unit
-    ) {
-        AlertDialog(
-            onDismissRequest = { onDismiss() },
-            title = { Text("Create Chat Room") },
-            text = {
-                Column {
-                    OutlinedTextField(
-                        value = newRoomName,
-                        onValueChange = onRoomNameChange,
-                        label = { Text("Room Name") }
-                    )
-                    if (errorText.isNotEmpty()) {
-                        Log.d("UI@@", "Showing error inside dialog: $errorText") // New log
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = errorText,
-                            color = Color.Red,
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 16.dp)
+        key(errorText) {
+            AlertDialog(
+                onDismissRequest = { resetDialogState() },
+                title = { Text("Create Chat Room") },
+                text = {
+                    Column {
+                        OutlinedTextField(
+                            value = newRoomName,
+                            onValueChange = { newRoomName = it },
+                            label = { Text("Room Name") }
                         )
+                        if (errorText.isNotEmpty()) {
+                            Log.d("UI@@", "Showing error inside dialog: $errorText") // New log
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = errorText,
+                                color = Color.Red,
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 16.dp)
+                            )
+                        }
+                    }
+                },
+                confirmButton = {
+                    Button(onClick = {
+                        chatRoomListViewModel.createChatRoom(
+                            newRoomName,
+                            onSuccess = { resetDialogState() },
+                            onError = { error -> errorText = error }
+                        )
+                    }) {
+                        Text("Create")
+                    }
+                },
+                dismissButton = {
+                    OutlinedButton(onClick = { resetDialogState() }) {
+                        Text("Cancel")
                     }
                 }
-            },
-            confirmButton = {
-                Button(onClick = { onCreateRoom(newRoomName) }) {
-                    Text("Create")
-                }
-            },
-            dismissButton = {
-                OutlinedButton(onClick = { onDismiss() }) {
-                    Text("Cancel")
-                }
-            }
-        )
+            )
+        }
     }
+}

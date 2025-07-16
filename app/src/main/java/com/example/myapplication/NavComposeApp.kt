@@ -18,27 +18,22 @@ import com.example.myapplication.view.register.RegisterView
 import com.google.firebase.auth.FirebaseAuth
 
 import android.util.Log
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.myapplication.view.chatroom.ChatRoomListViewModel
 
 @Composable
-fun NavComposeApp() {
-//    This creates and remembers a NavHostController — the object that manages app navigation
-//    It should only be created once per Composable recomposition, which is what rememberNavController() does.
-//    Without remember, a new NavController would be created every recomposition, breaking navigation.
+fun NavComposeApp(chatRoomListViewModel: ChatRoomListViewModel = viewModel()) {
     val navController = rememberNavController()
-//    remember(...) { ... } caches a value and only re-executes the lambda if its key inputs change.
-//    “Remember this Action(navController) as long as navController doesn’t change.”
-    /*
-    Why use remember(navController) { ... }?
-        It ensures that: The Action object is only created once per navController
-        If the navController changes (e.g., due to recomposition or scoping), it will recreate actions
-        This is important in Compose, where things recompose frequently. You don’t want to recreate your navigation logic every time.
-     */
     val actions = Action(navController)
+
+    val chatRooms by chatRoomListViewModel.chatRooms.collectAsState()
 
     MyApplicationTheme {
         NavHost(
             navController = navController,
-            startDestination = if (FirebaseAuth.getInstance().currentUser != null) Destination.ChatRoomList else Destination.AuthenticationOption
+            startDestination = if (FirebaseAuth.getInstance().currentUser != null) Destination.ChatRoom else Destination.AuthenticationOption
         ) {
             composable(Destination.AuthenticationOption) {
                 AuthenticationView(
@@ -67,8 +62,8 @@ fun NavComposeApp() {
                 Destination.ChatRoom
 //                arguments = listOf(navArgument("roomId") { type = NavType.StringType })
             ) { backStackEntry ->
-                val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
-//                val roomId = "Maths"
+//                val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
+                val roomId = "Maths"
                 HomeView(
                     roomId = roomId,
                     onBackClick = actions.chatRoomList // Pass navigation to chat room list
