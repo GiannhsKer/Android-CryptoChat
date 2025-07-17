@@ -87,6 +87,7 @@ fun HomeView(
     )
     Column(
         modifier = Modifier
+            .padding(WindowInsets.statusBars.asPaddingValues())
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
