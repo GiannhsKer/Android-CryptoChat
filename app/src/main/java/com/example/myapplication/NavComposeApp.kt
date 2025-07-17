@@ -33,7 +33,10 @@ fun NavComposeApp(chatRoomListViewModel: ChatRoomListViewModel = viewModel()) {
     MyApplicationTheme {
         NavHost(
             navController = navController,
-            startDestination = if (FirebaseAuth.getInstance().currentUser != null) Destination.ChatRoom else Destination.AuthenticationOption
+            startDestination = if (FirebaseAuth.getInstance().currentUser != null)
+                Destination.ChatRoomList
+            else
+                Destination.AuthenticationOption
         ) {
             composable(Destination.AuthenticationOption) {
                 AuthenticationView(
