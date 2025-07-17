@@ -1,23 +1,19 @@
 package com.example.myapplication
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.example.myapplication.nav.Action
 import com.example.myapplication.nav.Destination
 import com.example.myapplication.ui.theme.MyApplicationTheme
-import com.example.myapplication.view.AuthenticationView
+import com.example.myapplication.view.authentication.AuthenticationView
 import com.example.myapplication.view.chatroom.ChatRoomListView
-import com.example.myapplication.view.home.HomeView
+import com.example.myapplication.view.chat.HomeView
 import com.example.myapplication.view.login.LoginView
 import com.example.myapplication.view.register.RegisterView
 import com.google.firebase.auth.FirebaseAuth
 
-import android.util.Log
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel

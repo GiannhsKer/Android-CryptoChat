@@ -1,13 +1,12 @@
 # 🔐 CryptoChat
 
 <p align="center">
-  <img src="assets/Screenshot_20250717_181726.png" width="200"/>
-  <img src="assets/Screenshot_20250717_181825.png" width="200"/>
-  <img src="assets/Screenshot_20250717_181837.png" width="200"/>
+  <img src="assets/Screen - Home.png" width="200"/>
+  <img src="assets/Screen - Chatrooms.png" width="200"/>
+  <img src="assets/Screen - Chat.png" width="200"/>
 </p>
 
 <p align="center">
-  <a href="https://github.com/GetStream/stream-chat-android/actions/workflows/build-and-test.yml"><img src="https://github.com/GetStream/stream-chat-android/workflows/Build%20and%20test/badge.svg" /></a>
   <a href="https://android-arsenal.com/api?level=35"><img alt="API" src="https://img.shields.io/badge/API-35%2B-brightgreen.svg?style=flat"/></a>
 </p>
 
