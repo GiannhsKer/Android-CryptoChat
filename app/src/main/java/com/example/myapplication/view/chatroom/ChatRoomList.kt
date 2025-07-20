@@ -92,24 +92,20 @@ fun ChatRoomListView(
             )
         },
         floatingActionButton = {
-            Box(
+            FloatingActionButton(
+                onClick = { showDialog = true },
                 modifier = Modifier
-                    .background(brush = gradientBrush, shape = CircleShape)
-                    .size(56.dp), // typical FAB size
-                contentAlignment = Alignment.Center
-            ) {
-                FloatingActionButton(
-                    onClick = { showDialog = true },
-                    containerColor = Color.Transparent,
-                    contentColor = Color.White,
-                    elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 0.dp)
+                    .size(56.dp)
+                    .background(color = MaterialTheme.colorScheme.primary, shape = CircleShape),
+                containerColor = Color.Transparent,
+                contentColor = Color.White,
+                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 0.dp)
 
-                ) {
-                    Icon(
-                        Icons.Default.Add,
-                        contentDescription = "Create Chat Room",
-                    )
-                }
+            ) {
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = "Create Chat Room",
+                )
             }
         }
     ) { padding ->

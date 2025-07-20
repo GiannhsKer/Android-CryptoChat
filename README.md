@@ -1,4 +1,4 @@
-# 🔐 CryptoChat
+# 🔐 CryptoChat (in-progress)
 
 <p align="center">
   <img src="assets/Screen - Home.png" width="200"/>
@@ -9,6 +9,8 @@
 <p align="center">
   <a href="https://android-arsenal.com/api?level=35"><img alt="API" src="https://img.shields.io/badge/API-35%2B-brightgreen.svg?style=flat"/></a>
 </p>
+
+*Important : This application is in progress, it is a working chat application but cryptographic safety functionalities are not yet implemented.*
 
 **CryptoChat** is a secure and modern messaging application focused on **confidentiality**, **integrity**, and **privacy** of communication. It integrates cutting-edge cryptographic techniques to ensure that all user messages are protected from unauthorized access or tampering.
 

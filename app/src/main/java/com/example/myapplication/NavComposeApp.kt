@@ -33,7 +33,7 @@ fun NavComposeApp(chatRoomListViewModel: ChatRoomListViewModel = viewModel()) {
         NavHost(
             navController = navController,
             startDestination = if (FirebaseAuth.getInstance().currentUser != null)
-                Destination.ChatRoom
+                Destination.AuthenticationOption
             else
                 Destination.AuthenticationOption
         ) {
@@ -64,9 +64,9 @@ fun NavComposeApp(chatRoomListViewModel: ChatRoomListViewModel = viewModel()) {
                 Destination.ChatRoom,
 //                arguments = listOf(navArgument("roomId") { type = NavType.StringType })
             ) { backStackEntry ->
-//                val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
+                val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
 //                Log.d("NavComposeApp", "@@@@@@@@@@@@@@@@@@ $roomId")
-                val roomId = "Maths"
+//                val roomId = "Maths"
                 HomeView(
                     roomId,
                     onBackClick = actions.chatRoomList // Pass navigation to chat room list
