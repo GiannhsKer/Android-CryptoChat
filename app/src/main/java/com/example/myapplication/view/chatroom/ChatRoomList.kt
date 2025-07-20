@@ -85,10 +85,10 @@ fun ChatRoomListView(
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
+                Modifier.background(brush = gradientBrush),
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),
-                modifier = Modifier.background(brush = gradientBrush)
             )
         },
         floatingActionButton = {

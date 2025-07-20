@@ -22,6 +22,12 @@ class ChatViewModel(private val roomId: String) : ViewModel() {
     private var _messages = MutableLiveData(emptyList<Map<String, Any>>().toMutableList())
     val messages: LiveData<MutableList<Map<String, Any>>> = _messages
 
+    private data class chatmessage(
+        val message: String,
+        val isCurrentUser: Boolean,
+        val sentBy: String,
+        val sentOn: Long
+    )
 
     fun updateMessage(message: String) {
         _message.value = message
@@ -51,27 +57,32 @@ class ChatViewModel(private val roomId: String) : ViewModel() {
 
 
     private fun getMessages() {
-        Firebase.firestore.collection("chatRooms").document(roomId).collection("messages")
+        val currentUserId = Firebase.auth.currentUser?.uid.orEmpty()
+
+        Firebase.firestore
+            .collection("chatRooms")
+            .document(roomId)
+            .collection("messages")
             .orderBy(Constants.SENT_ON)
-            .addSnapshotListener { value, e ->
-                if (e != null) {
-                    Log.w(Constants.TAG, "Listen failed.", e)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.e("ChatViewModel", "Listen failed.", error)
                     return@addSnapshotListener
                 }
 
-                val list = emptyList<Map<String, Any>>().toMutableList()
+                val messages = snapshot?.mapNotNull { document ->
+                    Log.d("ChatViewModel", document.toString())
+                    val mutableData = document.data.toMutableMap()
 
-                if (value != null) {
-                    for (doc in value) {
-                        val data = doc.data
-                        data[Constants.IS_CURRENT_USER] =
-                            Firebase.auth.currentUser?.uid.toString() == data[Constants.SENT_BY].toString()
+                    if (!mutableData.containsKey(Constants.SENT_BY) || !mutableData.containsKey(Constants.MESSAGE))
+                        return@mapNotNull null
 
-                        list.add(data)
-                    }
-                }
+                    mutableData[Constants.IS_CURRENT_USER] = currentUserId == mutableData[Constants.SENT_BY].toString()
 
-                updateMessages(list)
+                    mutableData.toMap()
+                } ?.toMutableList() ?: mutableListOf()
+
+                updateMessages(messages)
             }
     }
 

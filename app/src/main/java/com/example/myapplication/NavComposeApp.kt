@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -17,6 +18,8 @@ import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.example.myapplication.view.chatroom.ChatRoomListViewModel
 
 @Composable
@@ -30,7 +33,7 @@ fun NavComposeApp(chatRoomListViewModel: ChatRoomListViewModel = viewModel()) {
         NavHost(
             navController = navController,
             startDestination = if (FirebaseAuth.getInstance().currentUser != null)
-                Destination.ChatRoomList
+                Destination.ChatRoom
             else
                 Destination.AuthenticationOption
         ) {
@@ -58,13 +61,14 @@ fun NavComposeApp(chatRoomListViewModel: ChatRoomListViewModel = viewModel()) {
                 )
             }
             composable(
-                Destination.ChatRoom
+                Destination.ChatRoom,
 //                arguments = listOf(navArgument("roomId") { type = NavType.StringType })
             ) { backStackEntry ->
-                val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
-//                val roomId = "Maths"
+//                val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
+//                Log.d("NavComposeApp", "@@@@@@@@@@@@@@@@@@ $roomId")
+                val roomId = "Maths"
                 HomeView(
-                    roomId = roomId,
+                    roomId,
                     onBackClick = actions.chatRoomList // Pass navigation to chat room list
                 )
             }
