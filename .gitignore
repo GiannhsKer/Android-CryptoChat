@@ -31,3 +31,10 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Default ignored files
+.idea/shelf/
+.idea/workspace.xml
+
+# app folder
+app/build
