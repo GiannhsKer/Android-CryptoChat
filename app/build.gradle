@@ -47,34 +47,40 @@ android {
 }
 
 dependencies {
+    // Core & Kotlin BOM
+    implementation("androidx.core:core-ktx:1.16.0")
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.22"))
 
-    implementation 'androidx.core:core-ktx:1.16.0'
-    implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.22')
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.9.1'
-    implementation 'androidx.activity:activity-compose:1.10.1'
-    implementation 'androidx.compose.ui:ui'
-    implementation 'androidx.compose.ui:ui-graphics'
-    implementation 'androidx.compose.ui:ui-tooling-preview'
-    implementation 'androidx.compose.material3:material3:1.3.2'
-    implementation 'com.google.firebase:firebase-auth-ktx:23.2.1'
-    implementation 'com.google.firebase:firebase-database-ktx:21.0.0'
-    implementation platform('androidx.compose:compose-bom:2025.06.01')
-
-    implementation 'androidx.navigation:navigation-runtime-ktx:2.9.1'
+    // Firebase BOM (manage all Firebase versions)
     implementation(platform("com.google.firebase:firebase-bom:33.16.0"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-database-ktx")
+    implementation("com.google.firebase:firebase-firestore-ktx")
 
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.9.1"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.9.1"
-    implementation "androidx.compose.runtime:runtime-livedata:1.8.3"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.9.1"
-    implementation "androidx.navigation:navigation-compose:2.9.1"
-    implementation 'com.google.firebase:firebase-firestore-ktx:25.1.4'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
-    androidTestImplementation platform('androidx.compose:compose-bom:2025.06.01')
-    androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
+    // Compose BOM to sync Compose libraries
+    implementation(platform("androidx.compose:compose-bom:2025.06.01"))
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-graphics")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material3:material3")
 
-    debugImplementation 'androidx.compose.ui:ui-tooling'
-    debugImplementation 'androidx.compose.ui:ui-test-manifest'
+    // Lifecycle & ViewModel (StateFlow/Compose integrations)
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.1")
+    implementation("androidx.compose.runtime:runtime-livedata")
+
+    // Activity & Navigation for Compose
+    implementation("androidx.activity:activity-compose:1.10.1")
+    implementation("androidx.navigation:navigation-compose:2.9.1")
+
+    // Testing
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    androidTestImplementation(platform("androidx.compose:compose-bom:2025.06.01"))
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+
+    // Debug tools
+    debugImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 }

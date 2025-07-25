@@ -1,4 +1,4 @@
-# 🔐 CryptoChat (in-progress)
+# 🔐 CryptoChat
 
 <p align="center">
   <img src="assets/Screen - Home.png" width="200"/>
