@@ -4,20 +4,16 @@ import android.app.Activity
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
-import com.gi.cryptochat.view.register.Buttons
 
 object Constants {
 
@@ -59,22 +55,22 @@ fun SetStatusBarAppearance(useDarkIcons: Boolean) {
 }
 
 @Composable
-fun alertBox(error : String) : Unit {
-    AlertDialog(
-        onDismissRequest = { showDialog = false },
-        title = { Text("Alert", color = Color(32, 33, 36)) },
-        text = { Text(dialogText.value, color = Color(95, 99, 104)) },
-        confirmButton = {
-
-            Buttons(
-                title = "Ok",
-                onClick = { showDialog = false },
-                modifier = Modifier.width(100.dp) // 👈 Set your desired width here
-
-            )
-        },
-
-        shape = RoundedCornerShape(15.dp),
-        containerColor = Color.White
-    )
+fun AppAlertDialog(
+    showDialog: Boolean,
+    message: String,
+    onDismiss: () -> Unit,
+    confirmText: String = "OK"
+) {
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text("Error") },
+            text = { Text(text = message) },
+            confirmButton = {
+                TextButton(onClick = onDismiss) {
+                    Text(text = confirmText)
+                }
+            }
+        )
+    }
 }

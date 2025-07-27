@@ -4,11 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.gi.cryptochat.view.authentication.AuthenticationView
-import com.gi.cryptochat.view.chat.ChatView
-import com.gi.cryptochat.view.chatroom.ChatRoomListView
-import com.gi.cryptochat.view.login.LoginView
-import com.gi.cryptochat.view.register.RegisterView
+import com.gi.cryptochat.features.authentication.AuthenticationView
+import com.gi.cryptochat.features.chat.ChatView
+import com.gi.cryptochat.features.chatroom.ChatRoomListView
+import com.gi.cryptochat.features.login.LoginView
+import com.gi.cryptochat.features.register.RegisterView
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -31,13 +31,12 @@ fun NavComposeApp() {
         }
         composable(Destination.REGISTER) {
             RegisterView(
-                home = actions.auth,
                 back = actions.navigateBack
             )
         }
         composable(Destination.LOGIN) {
             LoginView(
-                home = actions.chatRoomList,
+                chatrooms = actions.chatRoomList,
                 back = actions.navigateBack
             )
         }

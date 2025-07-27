@@ -1,35 +1,22 @@
-package com.gi.cryptochat.view.register
+package com.gi.cryptochat.features.login
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -46,33 +33,27 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.gi.cryptochat.AppAlertDialog
 import com.gi.cryptochat.R
 import com.gi.cryptochat.SetStatusBarAppearance
 import com.gi.cryptochat.getStatusBarHeight
 import com.gi.cryptochat.gradientBrush
 
 @Composable
-fun RegisterView(
-    home: () -> Unit,
+fun LoginView(
+    chatrooms: () -> Unit = {},
     back: () -> Unit = {},
-    registerViewModel: RegisterViewModel = viewModel()
+    loginViewModel: LoginViewModel = viewModel()
 ) {
-    val email: String by registerViewModel.email.collectAsState()
-    val password: String by registerViewModel.password.collectAsState("")
-    val loading: Boolean by registerViewModel.loading.collectAsState(false)
 
-    val username = remember { mutableStateOf("") }
-    val confirm = remember { mutableStateOf(TextFieldValue()) }
-    var showDialog by rememberSaveable { mutableStateOf(false) }
-    val dialogText = remember { mutableStateOf("") }
-    var isChecked by rememberSaveable { mutableStateOf(false) }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    val loading: Boolean by loginViewModel.loading.collectAsState(initial = false)
+    val showPass = remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
 
     SetStatusBarAppearance(
@@ -89,8 +70,7 @@ fun RegisterView(
         ) {
             if (loading) {
                 CircularProgressIndicator(
-                    modifier = Modifier
-                        .align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center)
                 )
             }
             Row(
@@ -139,53 +119,37 @@ fun RegisterView(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.steps),
+                        painter = painterResource(id = R.drawable.sign),
                         contentDescription = null,
-                        modifier = Modifier.size(200.dp)
+                        modifier = Modifier.size(260.dp)
                     )
 
-                    TextFormField(
+                    OutlinedTextField(
                         value = email,
-                        onValueChange = { registerViewModel.updateEmail(it) },
-                        label = "Email",
-                        keyboardType = KeyboardType.Email,
-                        visualTransformation = VisualTransformation.None
+                        onValueChange = { email = it },
+                        label = { Text("Email") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                        modifier = Modifier.fillMaxWidth()
                     )
 
-                    TextFormField(
-                        value = username.value,
-                        onValueChange = { username.value = it },
-                        label = "Username",
-                        keyboardType = KeyboardType.Text,
-                        visualTransformation = VisualTransformation.None
-                    )
-
-                    TextFormField(
+                    OutlinedTextField(
                         value = password,
-                        onValueChange = { registerViewModel.updatePassword(it) },
-                        label = "Password",
-                        keyboardType = KeyboardType.Password,
-                        visualTransformation = if (!isChecked) PasswordVisualTransformation() else VisualTransformation.None
-                    )
-
-                    TextFormField(
-                        value = confirm.value.text,
-                        onValueChange = { confirm.value = TextFieldValue(it) },
-                        label = "Confirm Password",
-                        keyboardType = KeyboardType.Password,
-                        visualTransformation = if (!isChecked) PasswordVisualTransformation() else VisualTransformation.None
+                        onValueChange = { password = it },
+                        label = { Text("Password") },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     )
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Checkbox(
-                            checked = isChecked,
-                            onCheckedChange = { isChecked = it },
-                            colors = CheckboxDefaults.colors(checkedColor = Color(26, 115, 232))
+                            checked = showPass.value,
+                            onCheckedChange = { showPass.value = !showPass.value },
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = Color(26, 115, 232)
+                            )
                         )
                         Text(
                             text = "Show password",
@@ -194,7 +158,6 @@ fun RegisterView(
                             fontSize = 16.sp
                         )
                     }
-
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(50))
@@ -202,20 +165,7 @@ fun RegisterView(
                             .fillMaxWidth()
                             .padding(vertical = 12.dp)
                             .clickable(onClick = {
-                                if (registerViewModel.validateTextFields(
-                                        email,
-                                        username,
-                                        password,
-                                        confirmPassword = confirm
-                                    ).isBlank()
-                                ) {
-                                    registerViewModel.registerUser(
-                                        home = home,
-                                        username = username.value
-                                    )
-                                } else {
-                                    showDialog = !showDialog
-                                }
+                                loginViewModel.loginUser(username, email, password)
                             }),
                         contentAlignment = Alignment.Center
                     ) {
@@ -229,21 +179,11 @@ fun RegisterView(
                 }
             }
         }
-
-        if (showDialog) {
-            AlertDialog(
-                onDismissRequest = { showDialog = false },
-                title = { Text("Alert") },
-                text = { Text(dialogText.value) },
-                shape = RoundedCornerShape(15.dp),
-                containerColor = Color.White,
-                confirmButton = {
-                    Buttons(
-                        title = "Ok",
-                        onClick = { showDialog = false },
-                        modifier = Modifier.width(100.dp)
-                    )
-                }
+        if (showDialog.value) {
+            AppAlertDialog(
+                showDialog = showDialog.value,
+                message = dialogMessage.value,
+                onDismiss = { showDialog.value = false }
             )
         }
     }

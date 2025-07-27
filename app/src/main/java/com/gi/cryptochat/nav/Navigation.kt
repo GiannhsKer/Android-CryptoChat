@@ -24,5 +24,4 @@ class Action(navController: NavHostController) {
     val chatRoom: (String) -> Unit = { roomId ->
         navController.navigate("chatRoom/$roomId")
     }
-    val auth: () -> Unit = { navController.navigate(Destination.AUTH_OPTION) }
 }

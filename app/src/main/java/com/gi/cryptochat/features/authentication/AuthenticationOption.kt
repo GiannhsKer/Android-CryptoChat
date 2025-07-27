@@ -1,4 +1,4 @@
-package com.gi.cryptochat.view.authentication
+package com.gi.cryptochat.features.authentication
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image

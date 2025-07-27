@@ -16,9 +16,8 @@
             android:name="firebase_automatic_init_enabled"
             android:value="true" />
         <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.MyApplication">
+            android:name="com.gi.cryptochat.MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

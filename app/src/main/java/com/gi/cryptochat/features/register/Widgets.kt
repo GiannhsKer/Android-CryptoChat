@@ -1,4 +1,4 @@
-package com.gi.cryptochat.view.register
+package com.gi.cryptochat.features.register
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

@@ -1,4 +1,4 @@
-package com.gi.cryptochat.view.chatroom
+package com.gi.cryptochat.features.chatroom
 
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi

@@ -1,4 +1,4 @@
-package com.gi.cryptochat.view.chatroom
+package com.gi.cryptochat.features.chatroom
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

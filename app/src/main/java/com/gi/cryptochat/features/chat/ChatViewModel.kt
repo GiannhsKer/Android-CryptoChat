@@ -1,4 +1,4 @@
-package com.gi.cryptochat.view.chat
+package com.gi.cryptochat.features.chat
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

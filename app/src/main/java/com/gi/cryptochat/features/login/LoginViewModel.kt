@@ -1,4 +1,4 @@
-package com.gi.cryptochat.view.login
+package com.gi.cryptochat.features.login
 
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -6,7 +6,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import java.lang.IllegalArgumentException
 
 class LoginViewModel : ViewModel() {
     private val auth: FirebaseAuth = Firebase.auth
@@ -28,7 +27,7 @@ class LoginViewModel : ViewModel() {
         _password.value = newPassword
     }
 
-    fun loginUser(home: () -> Unit) {
+    fun loginUser() {
         if (!_loading.value) {
             val email: String = _email.value ?: throw IllegalArgumentException("email expected")
             val password: String =
@@ -39,7 +38,7 @@ class LoginViewModel : ViewModel() {
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener {
                     if (it.isSuccessful) {
-                        home()
+                        chatRoo()
                     }
                     _loading.value = false
                 }
