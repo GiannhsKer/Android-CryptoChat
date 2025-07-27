@@ -5,7 +5,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -46,10 +45,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.gi.cryptochat.gradientBrush
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -62,10 +61,6 @@ fun ChatRoomListView(
     var newRoomName by remember { mutableStateOf("") }
     var errorText by remember { mutableStateOf("") }
 
-    val gradientBrush = Brush.horizontalGradient(
-        colors = listOf(Color(0xFF2196F3), Color(0xFF2575FC))
-    )
-
     fun resetDialogState() {
         showDialog = false
         newRoomName = ""
@@ -77,7 +72,7 @@ fun ChatRoomListView(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        "Chat Rooms",
+                        text = "Chat Rooms",
                         color = Color.White,
                         style = MaterialTheme.typography.titleLarge
                     )
@@ -92,7 +87,7 @@ fun ChatRoomListView(
             FloatingActionButton(
                 onClick = { showDialog = true },
                 modifier = Modifier
-                    .size(56.dp)
+                    .size(size = 56.dp)
                     .background(color = MaterialTheme.colorScheme.primary, shape = CircleShape),
                 containerColor = Color.Transparent,
                 contentColor = Color.White,
@@ -100,7 +95,7 @@ fun ChatRoomListView(
 
             ) {
                 Icon(
-                    Icons.Default.Add,
+                    imageVector = Icons.Default.Add,
                     contentDescription = "Create Chat Room",
                 )
             }
@@ -113,7 +108,7 @@ fun ChatRoomListView(
                 end = 16.dp,
                 bottom = 16.dp
             ),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(space = 16.dp)
         ) {
             items(chatRooms) { room ->
                 Card(

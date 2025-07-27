@@ -42,25 +42,15 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun Title(title: String) {
-    Text(
-        text = title,
-        fontSize = 30.sp,
-        fontWeight = FontWeight.Bold
-    )
-}
-
-@Composable
 fun Buttons(
     modifier: Modifier = Modifier,
     title: String,
     onClick: () -> Unit
 ) {
-    val shape = RoundedCornerShape(50)
 
     Box(
         modifier = modifier
-            .clip(shape)
+            .clip(RoundedCornerShape(50))
             .background(color = Color.Blue)
             .clickable(onClick = onClick)
             .padding(vertical = 12.dp),

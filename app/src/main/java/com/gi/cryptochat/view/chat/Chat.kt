@@ -28,32 +28,32 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.gi.cryptochat.getStatusBarHeight
+import com.gi.cryptochat.gradientBrush
 import kotlin.math.abs
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeView(
+fun ChatView(
     roomId: String,
     homeViewModel: ChatViewModel = viewModel(factory = ChatViewModel.provideFactory(roomId)),
-    onBackClick: () -> Unit = {} // Add this parameter for back navigation
+    onBackClick: () -> Unit = {}
 ) {
-    val message: String by homeViewModel.message.observeAsState(initial = "")
-    val messages: List<Map<String, Any>> by homeViewModel.messages.observeAsState(
+    val message: String by homeViewModel.message.collectAsState(initial = "")
+    val messages: List<Map<String, Any>> by homeViewModel.messages.collectAsState(
         initial = emptyList<Map<String, Any>>().toMutableList()
     )
-    val messages2: List<ChatViewModel.ChatMessage> by homeViewModel.messages2.observeAsState(
+    val messages2: List<ChatViewModel.ChatMessage> by homeViewModel.messages2.collectAsState(
         initial = emptyList<ChatViewModel.ChatMessage>().toMutableList()
     )
 
@@ -87,24 +87,20 @@ fun HomeView(
         return userColors[index]
     }
 
-    val gradientBrush = Brush.horizontalGradient(
-        colors = listOf(Color(0xFF2196F3), Color(0xFF2575FC))
-    )
 
-    val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         Box(
             modifier = Modifier
-                .height(56.dp + statusBarHeight)
+                .height(56.dp + getStatusBarHeight())
                 .background(brush = gradientBrush),
             contentAlignment = Alignment.Center
         ) {
             Row(
                 modifier = Modifier
-                    .padding(top = statusBarHeight + 8.dp),
+                    .padding(top = getStatusBarHeight() + 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
@@ -112,7 +108,7 @@ fun HomeView(
                     modifier = Modifier.size(48.dp)
                 ) {
                     Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
                         tint = Color.White
                     )

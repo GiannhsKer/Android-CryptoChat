@@ -1,114 +1,122 @@
 package com.gi.cryptochat.view.register
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gi.cryptochat.R
-
+import com.gi.cryptochat.SetStatusBarAppearance
+import com.gi.cryptochat.getStatusBarHeight
+import com.gi.cryptochat.gradientBrush
 
 @Composable
 fun RegisterView(
     home: () -> Unit,
-    back: () -> Unit,
+    back: () -> Unit = {},
     registerViewModel: RegisterViewModel = viewModel()
 ) {
-    val email: String by registerViewModel.email.observeAsState("")
-    val password: String by registerViewModel.password.observeAsState("")
-    val loading: Boolean by registerViewModel.loading.observeAsState(initial = false)
+    val email: String by registerViewModel.email.collectAsState()
+    val password: String by registerViewModel.password.collectAsState("")
+    val loading: Boolean by registerViewModel.loading.collectAsState(false)
 
     val username = remember { mutableStateOf("") }
     val confirm = remember { mutableStateOf(TextFieldValue()) }
-    val showPass = remember { mutableStateOf(false) }
-    val showDialog = remember { mutableStateOf(false) }
+    var showDialog by rememberSaveable { mutableStateOf(false) }
     val dialogText = remember { mutableStateOf("") }
+    var isChecked by rememberSaveable { mutableStateOf(false) }
     val scrollState = rememberScrollState()
 
-    fun validateTextFields(): Boolean {
-        if (email.isBlank()) {
-            dialogText.value = "Please enter your email."
-            showDialog.value = true
-            return false
-        }
-
-        if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".toRegex())) {
-            dialogText.value = "Email is invalid."
-            showDialog.value = true
-            return false
-        }
-
-        if (username.value.isBlank()) {
-            dialogText.value = "Please enter your username."
-            showDialog.value = true
-            return false
-        }
-
-        if (password.isBlank()) {
-            dialogText.value = "Please enter a password."
-            showDialog.value = true
-            return false
-        }
-
-        if (password.length < 8 || !password.matches("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#\$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]).+\$".toRegex())) {
-            dialogText.value = "Password should be at least 8 characters long and include letters, numbers, and symbols."
-            showDialog.value = true
-            return false
-        }
-
-        if (confirm.value.text != password) {
-            dialogText.value = "Password and confirm password do not match."
-            showDialog.value = true
-            return false
-        }
-
-        return true
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
+    SetStatusBarAppearance(
+        useDarkIcons = false
+    )
+    Column(
+        modifier = Modifier.fillMaxSize()
     ) {
-        if (loading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        Box(
+            modifier = Modifier
+                .height(56.dp + getStatusBarHeight())
+                .background(brush = gradientBrush),
+            contentAlignment = Alignment.Center
+        ) {
+            if (loading) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .padding(top = getStatusBarHeight() + 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = back,
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.White
+                    )
+                }
+                Text(
+                    text = "Register",
+                    Modifier.weight(1f),
+                    color = Color.White,
+                    style = MaterialTheme.typography.titleLarge,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -117,9 +125,6 @@ fun RegisterView(
                 .imePadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Appbar(title = "Register", action = back)
-
-            Spacer(modifier = Modifier.height(16.dp))
 
             Box(
                 modifier = Modifier
@@ -130,7 +135,7 @@ fun RegisterView(
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Top,
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Image(
@@ -138,8 +143,6 @@ fun RegisterView(
                         contentDescription = null,
                         modifier = Modifier.size(200.dp)
                     )
-
-                    Spacer(modifier = Modifier.height(16.dp))
 
                     TextFormField(
                         value = email,
@@ -149,8 +152,6 @@ fun RegisterView(
                         visualTransformation = VisualTransformation.None
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
-
                     TextFormField(
                         value = username.value,
                         onValueChange = { username.value = it },
@@ -159,35 +160,31 @@ fun RegisterView(
                         visualTransformation = VisualTransformation.None
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
-
                     TextFormField(
                         value = password,
                         onValueChange = { registerViewModel.updatePassword(it) },
                         label = "Password",
                         keyboardType = KeyboardType.Password,
-                        visualTransformation = if (!showPass.value) PasswordVisualTransformation() else VisualTransformation.None
+                        visualTransformation = if (!isChecked) PasswordVisualTransformation() else VisualTransformation.None
                     )
-
-                    Spacer(modifier = Modifier.height(12.dp))
 
                     TextFormField(
                         value = confirm.value.text,
                         onValueChange = { confirm.value = TextFieldValue(it) },
                         label = "Confirm Password",
                         keyboardType = KeyboardType.Password,
-                        visualTransformation = if (!showPass.value) PasswordVisualTransformation() else VisualTransformation.None
+                        visualTransformation = if (!isChecked) PasswordVisualTransformation() else VisualTransformation.None
                     )
-
-                    Spacer(modifier = Modifier.height(8.dp))
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
                     ) {
                         Checkbox(
-                            checked = showPass.value,
-                            onCheckedChange = { showPass.value = !showPass.value },
+                            checked = isChecked,
+                            onCheckedChange = { isChecked = it },
                             colors = CheckboxDefaults.colors(checkedColor = Color(26, 115, 232))
                         )
                         Text(
@@ -198,43 +195,55 @@ fun RegisterView(
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    Buttons(
-                        title = "Register",
-                        onClick = {
-                            if (validateTextFields()) {
-                                registerViewModel.registerUser(
-                                    home = home,
-                                    username = username.value
-                                )
-                            }
-                        },
-//                        backgroundColor = Color.Black,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(50))
+                            .background(gradientBrush)
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp)
+                            .clickable(onClick = {
+                                if (registerViewModel.validateTextFields(
+                                        email,
+                                        username,
+                                        password,
+                                        confirmPassword = confirm
+                                    ).isBlank()
+                                ) {
+                                    registerViewModel.registerUser(
+                                        home = home,
+                                        username = username.value
+                                    )
+                                } else {
+                                    showDialog = !showDialog
+                                }
+                            }),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Register",
+                            color = Color.White,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }
 
-        if (showDialog.value) {
+        if (showDialog) {
             AlertDialog(
-                onDismissRequest = { showDialog.value = false },
-                title = { Text("Alert", color = Color(32, 33, 36)) },
-                text = { Text(dialogText.value, color = Color(95, 99, 104)) },
+                onDismissRequest = { showDialog = false },
+                title = { Text("Alert") },
+                text = { Text(dialogText.value) },
+                shape = RoundedCornerShape(15.dp),
+                containerColor = Color.White,
                 confirmButton = {
-
                     Buttons(
                         title = "Ok",
-                        onClick = { showDialog.value = false },
-//                        backgroundColor = Color.Black
-                        modifier = Modifier.width(100.dp) // 👈 Set your desired width here
-
+                        onClick = { showDialog = false },
+                        modifier = Modifier.width(100.dp)
                     )
-                },
-
-                shape = RoundedCornerShape(15.dp),
-                containerColor = Color.White
+                }
             )
         }
     }

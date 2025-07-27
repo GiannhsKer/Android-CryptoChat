@@ -1,24 +1,24 @@
 package com.gi.cryptochat.view.login
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import java.lang.IllegalArgumentException
 
 class LoginViewModel : ViewModel() {
     private val auth: FirebaseAuth = Firebase.auth
 
-    private val _email = MutableLiveData("")
-    val email: LiveData<String> = _email
+    private val _email = MutableStateFlow("")
+    val email: StateFlow<String> = _email
 
-    private val _password = MutableLiveData("")
-    val password: LiveData<String> = _password
+    private val _password = MutableStateFlow("")
+    val password: StateFlow<String> = _password
 
-    private val _loading = MutableLiveData(false)
-    val loading: LiveData<Boolean> = _loading
+    private val _loading = MutableStateFlow(false)
+    val loading: StateFlow<Boolean> = _loading
 
     fun updateEmail(newEmail: String) {
         _email.value = newEmail
@@ -29,7 +29,7 @@ class LoginViewModel : ViewModel() {
     }
 
     fun loginUser(home: () -> Unit) {
-        if (_loading.value == false) {
+        if (!_loading.value) {
             val email: String = _email.value ?: throw IllegalArgumentException("email expected")
             val password: String =
                 _password.value ?: throw IllegalArgumentException("password expected")

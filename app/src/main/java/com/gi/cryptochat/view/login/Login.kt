@@ -12,7 +12,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,6 +31,7 @@ import com.gi.cryptochat.R
 import com.gi.cryptochat.view.register.Appbar
 import com.gi.cryptochat.view.register.Buttons
 import com.gi.cryptochat.view.register.TextFormField
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun LoginView(
@@ -38,9 +39,9 @@ fun LoginView(
     back: () -> Unit,
     loginViewModel: LoginViewModel = viewModel()
 ) {
-    val email: String by loginViewModel.email.observeAsState("")
-    val password: String by loginViewModel.password.observeAsState("")
-    val loading: Boolean by loginViewModel.loading.observeAsState(initial = false)
+    val email: String by loginViewModel.email.collectAsState("")
+    val password: String by loginViewModel.password.collectAsState("")
+    val loading: Boolean by loginViewModel.loading.collectAsState(initial = false)
     val showPass = remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
 

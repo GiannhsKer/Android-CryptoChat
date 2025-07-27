@@ -1,16 +1,15 @@
 package com.gi.cryptochat.view.chat
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.gi.cryptochat.Constants
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.Exclude
-import com.google.firebase.database.PropertyName
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 
 class ChatViewModel(private val roomId: String) : ViewModel() {
@@ -21,14 +20,14 @@ class ChatViewModel(private val roomId: String) : ViewModel() {
         getMessages()
     }
 
-    private val _message = MutableLiveData("")
-    val message: LiveData<String> = _message
+    private val _message = MutableStateFlow("")
+    val message: StateFlow<String> = _message
 
-    private var _messages = MutableLiveData(emptyList<Map<String, Any>>().toMutableList())
-    val messages: LiveData<MutableList<Map<String, Any>>> = _messages
+    private var _messages = MutableStateFlow(emptyList<Map<String, Any>>().toMutableList())
+    val messages: StateFlow<MutableList<Map<String, Any>>> = _messages
 
-    private var _messages2 = MutableLiveData(emptyList<ChatMessage>().toMutableList())
-    val messages2: LiveData<MutableList<ChatMessage>> = _messages2
+    private var _messages2 = MutableStateFlow(emptyList<ChatMessage>().toMutableList())
+    val messages2: StateFlow<MutableList<ChatMessage>> = _messages2
 
 
     data class ChatMessage(
