@@ -11,6 +11,7 @@ object Destination {
 }
 
 class Action(navController: NavHostController) {
+    val auth: () -> Unit = { navController.navigate(Destination.AUTH_OPTION) }
     val login: () -> Unit = { navController.navigate(Destination.LOGIN) }
     val register: () -> Unit = { navController.navigate(Destination.REGISTER) }
     val navigateBack: () -> Unit = { navController.popBackStack() }

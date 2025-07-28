@@ -1,4 +1,4 @@
-package com.gi.cryptochat.features.login
+package com.gi.cryptochat.features.authentication
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,11 +34,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gi.cryptochat.AppAlertDialog
+import com.gi.cryptochat.Constants.LOG_IN
 import com.gi.cryptochat.R
 import com.gi.cryptochat.SetStatusBarAppearance
 import com.gi.cryptochat.getStatusBarHeight
@@ -45,16 +49,17 @@ import com.gi.cryptochat.gradientBrush
 
 @Composable
 fun LoginView(
-    chatrooms: () -> Unit = {},
+    chatRooms: () -> Unit = {},
     back: () -> Unit = {},
-    loginViewModel: LoginViewModel = viewModel()
+    authViewModel: AuthViewModel = viewModel()
 ) {
 
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
-    val loading: Boolean by loginViewModel.loading.collectAsState(initial = false)
+    val loading: Boolean by authViewModel.loading.collectAsState(initial = false)
     val showPass = remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
+    val uiState by authViewModel.uiState.collectAsState()
 
     SetStatusBarAppearance(
         useDarkIcons = false
@@ -89,7 +94,7 @@ fun LoginView(
                     )
                 }
                 Text(
-                    text = "Register",
+                    text = "Login",
                     Modifier.weight(1f),
                     color = Color.White,
                     style = MaterialTheme.typography.titleLarge,
@@ -138,6 +143,7 @@ fun LoginView(
                         label = { Text("Password") },
                         modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        visualTransformation = if (!showPass.value) PasswordVisualTransformation() else VisualTransformation.None
                     )
 
                     Row(
@@ -165,12 +171,16 @@ fun LoginView(
                             .fillMaxWidth()
                             .padding(vertical = 12.dp)
                             .clickable(onClick = {
-                                loginViewModel.loginUser(username, email, password)
+                                authViewModel.authUser(
+                                    username = "",
+                                    email = email,
+                                    password = password,
+                                    action = LOG_IN)
                             }),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Register",
+                            text = "Login",
                             color = Color.White,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold
@@ -179,11 +189,16 @@ fun LoginView(
                 }
             }
         }
-        if (showDialog.value) {
+        LaunchedEffect(uiState.onSuccess) {
+            if (uiState.onSuccess) {
+                chatRooms()
+            }
+        }
+
+        uiState.error?.let { errorMessage ->
             AppAlertDialog(
-                showDialog = showDialog.value,
-                message = dialogMessage.value,
-                onDismiss = { showDialog.value = false }
+                message = errorMessage,
+                onDismiss = { authViewModel.clearError() }
             )
         }
     }

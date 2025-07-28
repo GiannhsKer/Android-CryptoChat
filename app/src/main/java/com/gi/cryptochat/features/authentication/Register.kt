@@ -1,4 +1,4 @@
-package com.gi.cryptochat.features.register
+package com.gi.cryptochat.features.authentication
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gi.cryptochat.AppAlertDialog
+import com.gi.cryptochat.Constants.REGISTER
 import com.gi.cryptochat.R
 import com.gi.cryptochat.SetStatusBarAppearance
 import com.gi.cryptochat.getStatusBarHeight
@@ -56,20 +58,22 @@ import com.gi.cryptochat.gradientBrush
 
 @Composable
 fun RegisterView(
+    auth: () -> Unit = {},
     back: () -> Unit = {},
-    registerViewModel: RegisterViewModel = viewModel()
+    authViewModel: AuthViewModel = viewModel()
 ) {
-    val loading: Boolean by registerViewModel.loading.collectAsState(false)
+    val loading: Boolean by authViewModel.loading.collectAsState(false)
 
     val confirm = remember { mutableStateOf(TextFieldValue()) }
     var showDialog = remember { mutableStateOf(false) }
-    val dialogMessage = remember { mutableStateOf("") }
+    val errorMessage = remember { mutableStateOf("") }
 
     var username by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var isChecked by rememberSaveable { mutableStateOf(false) }
     val scrollState = rememberScrollState()
+    val uiState by authViewModel.uiState.collectAsState()
 
     SetStatusBarAppearance(
         useDarkIcons = false
@@ -197,15 +201,15 @@ fun RegisterView(
                             .fillMaxWidth()
                             .padding(vertical = 12.dp)
                             .clickable(onClick = {
-                                dialogMessage.value =
-                                    registerViewModel.validateTextFields(
+                                errorMessage.value =
+                                    authViewModel.validateTextFields(
                                         email,
                                         username,
                                         password,
                                         confirmPassword = confirm
                                     )
-                                if (dialogMessage.value.isBlank()) {
-                                    registerViewModel.registerUser(username, email, password)
+                                if (errorMessage.value.isBlank()) {
+                                    authViewModel.authUser(username, email, password, REGISTER)
                                 } else {
                                     showDialog.value = !showDialog.value
                                 }
@@ -224,9 +228,21 @@ fun RegisterView(
         }
         if (showDialog.value) {
             AppAlertDialog(
-                showDialog = showDialog.value,
-                message = dialogMessage.value,
+                message = errorMessage.value,
                 onDismiss = { showDialog.value = false }
+            )
+        }
+
+        LaunchedEffect(uiState.onSuccess) {
+            if (uiState.onSuccess) {
+                auth()
+            }
+        }
+
+        uiState.error?.let { errorMessage ->
+            AppAlertDialog(
+                message = errorMessage,
+                onDismiss = { authViewModel.clearError() }
             )
         }
     }

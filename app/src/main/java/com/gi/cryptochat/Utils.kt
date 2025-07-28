@@ -17,6 +17,13 @@ import androidx.core.view.WindowCompat
 
 object Constants {
 
+    //    Navigation proprties
+    const val AUTH_OPTION = "AuthOption"
+    const val CHATROOM_LIST = "ChatRoomList"
+    const val CHATROOM = "ChatRoom/{roomId}"
+    const val LOG_IN = "LogIn"
+    const val REGISTER = "Register"
+
     //    Chat object properties
     const val MESSAGES = "messages"
     const val MESSAGE = "message"
@@ -24,7 +31,7 @@ object Constants {
     const val SENT_ON = "sent_on"
     const val IS_CURRENT_USER = "is_current_user"
 
-//    Error Messages
+    //    Error Messages
     const val EMAIL_EMPTY = "Please enter your email."
     const val EMAIL_INVALID = "Email is invalid."
     const val USERNAME_EMPTY = "Please enter your username."
@@ -32,6 +39,9 @@ object Constants {
     const val PASSWORD_WEAK =
         "Password should be at least 8 characters long and include letters, numbers, and symbols."
     const val PASSWORD_MISMATCH = "Password and confirm password do not match."
+
+    //    Classes for debug
+    const val AUTH_VIEWMODEL = "AuthViewModel"
 }
 
 val gradientBrush = Brush.horizontalGradient(
@@ -39,7 +49,7 @@ val gradientBrush = Brush.horizontalGradient(
 )
 
 @Composable
-fun getStatusBarHeight() : Dp {
+fun getStatusBarHeight(): Dp {
     return WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 }
 
@@ -56,21 +66,17 @@ fun SetStatusBarAppearance(useDarkIcons: Boolean) {
 
 @Composable
 fun AppAlertDialog(
-    showDialog: Boolean,
     message: String,
     onDismiss: () -> Unit,
-    confirmText: String = "OK"
 ) {
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = onDismiss,
-            title = { Text("Error") },
-            text = { Text(text = message) },
-            confirmButton = {
-                TextButton(onClick = onDismiss) {
-                    Text(text = confirmText)
-                }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Error") },
+        text = { Text(text = message) },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = "Ok")
             }
-        )
-    }
+        }
+    )
 }
