@@ -7,10 +7,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -48,6 +46,8 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.gi.cryptochat.AppAlertDialog
+import com.gi.cryptochat.getDateFromLong
 import com.gi.cryptochat.gradientBrush
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -60,6 +60,7 @@ fun ChatRoomListView(
     var showDialog by remember { mutableStateOf(false) }
     var newRoomName by remember { mutableStateOf("") }
     var errorText by remember { mutableStateOf("") }
+    val uiState by chatRoomListViewModel.uiState.collectAsState()
 
     fun resetDialogState() {
         showDialog = false
@@ -130,7 +131,7 @@ fun ChatRoomListView(
                             .padding(16.dp)
                     )
                     Text(
-                        "Created by ${room.creator}",
+                        "Created at ${getDateFromLong(room.createdAt)} by ${room.creatorName}",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.White.copy(alpha = 0.8f),
                         modifier = Modifier
@@ -154,8 +155,7 @@ fun ChatRoomListView(
                             label = { Text("Room Name") }
                         )
                         if (errorText.isNotEmpty()) {
-                            Log.d("UI@@", "Showing error inside dialog: $errorText") // New log
-                            Spacer(modifier = Modifier.height(4.dp))
+                            Log.d("UI@@", "Showing error inside dialog: $errorText")
                             Text(
                                 text = errorText,
                                 color = Color.Red,
@@ -183,6 +183,12 @@ fun ChatRoomListView(
                         Text("Cancel")
                     }
                 }
+            )
+        }
+        uiState.error?.let { errorMessage ->
+            AppAlertDialog(
+                message = errorMessage,
+                onDismiss = { chatRoomListViewModel.clearError() }
             )
         }
     }

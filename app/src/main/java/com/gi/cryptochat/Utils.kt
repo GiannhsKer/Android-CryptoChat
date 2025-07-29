@@ -14,10 +14,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Dp
 import androidx.core.view.WindowCompat
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 object Constants {
 
-    //    Navigation proprties
+    //    Navigation properties
     const val AUTH_OPTION = "AuthOption"
     const val CHATROOM_LIST = "ChatRoomList"
     const val CHATROOM = "ChatRoom/{roomId}"
@@ -41,7 +44,8 @@ object Constants {
     const val PASSWORD_MISMATCH = "Password and confirm password do not match."
 
     //    Classes for debug
-    const val AUTH_VIEWMODEL = "AuthViewModel"
+    const val AUTHENTICATION_VM = "Authentication VM"
+    const val CHATROOMLIST_VM = "ChatRoomList VM"
 }
 
 val gradientBrush = Brush.horizontalGradient(
@@ -79,4 +83,11 @@ fun AppAlertDialog(
             }
         }
     )
+}
+
+@Composable
+fun getDateFromLong(timestamp : Long) : String{
+    val date = Date(timestamp)
+    val formatter = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
+    return formatter.format(date)
 }
