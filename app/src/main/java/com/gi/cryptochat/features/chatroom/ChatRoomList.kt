@@ -1,6 +1,5 @@
 package com.gi.cryptochat.features.chatroom
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -58,13 +57,13 @@ fun ChatRoomListView(
 ) {
     val chatRooms by chatRoomListViewModel.chatRooms.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
-    var newRoomName by remember { mutableStateOf("") }
+    var chatRoomName by remember { mutableStateOf("") }
     var errorText by remember { mutableStateOf("") }
     val uiState by chatRoomListViewModel.uiState.collectAsState()
 
     fun resetDialogState() {
         showDialog = false
-        newRoomName = ""
+        chatRoomName = ""
         errorText = ""
     }
 
@@ -89,7 +88,7 @@ fun ChatRoomListView(
                 onClick = { showDialog = true },
                 modifier = Modifier
                     .size(size = 56.dp)
-                    .background(color = MaterialTheme.colorScheme.primary, shape = CircleShape),
+                    .background(color = Color.Blue, shape = CircleShape),
                 containerColor = Color.Transparent,
                 contentColor = Color.White,
                 elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 0.dp)
@@ -102,6 +101,7 @@ fun ChatRoomListView(
             }
         }
     ) { padding ->
+        Text("Welcome $")
         LazyColumn(
             contentPadding = PaddingValues(
                 top = padding.calculateTopPadding() + 16.dp,
@@ -115,7 +115,7 @@ fun ChatRoomListView(
                 Card(
                     modifier = Modifier
                         .fillMaxSize()
-                        .clickable { onChatRoomSelected(room.name) }
+                        .clickable { onChatRoomSelected(room.chatRoomId) }
                         .clip(RoundedCornerShape(16.dp))
                         .drawWithCache {
                             onDrawBehind { drawRect(gradientBrush) }
@@ -124,7 +124,7 @@ fun ChatRoomListView(
                 )
                 {
                     Text(
-                        room.name,
+                        room.chatRoomName,
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.White,
                         modifier = Modifier
@@ -150,12 +150,11 @@ fun ChatRoomListView(
                 text = {
                     Column {
                         OutlinedTextField(
-                            value = newRoomName,
-                            onValueChange = { newRoomName = it },
+                            value = chatRoomName,
+                            onValueChange = { chatRoomName = it },
                             label = { Text("Room Name") }
                         )
                         if (errorText.isNotEmpty()) {
-                            Log.d("UI@@", "Showing error inside dialog: $errorText")
                             Text(
                                 text = errorText,
                                 color = Color.Red,
@@ -170,7 +169,7 @@ fun ChatRoomListView(
                 confirmButton = {
                     Button(onClick = {
                         chatRoomListViewModel.createChatRoom(
-                            newRoomName,
+                            chatRoomName,
                             onSuccess = { resetDialogState() },
                             onError = { error -> errorText = error }
                         )

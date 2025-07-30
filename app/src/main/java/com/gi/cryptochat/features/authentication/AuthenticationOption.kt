@@ -31,7 +31,7 @@ import com.gi.cryptochat.gradientBrush
 fun AuthenticationView(register: () -> Unit, login: () -> Unit) {
 
     SetStatusBarAppearance(
-        useDarkIcons = true // or false if your background is dark
+        useDarkIcons = true
     )
     Surface {
         Column(

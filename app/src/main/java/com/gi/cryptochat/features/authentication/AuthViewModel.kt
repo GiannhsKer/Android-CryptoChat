@@ -12,6 +12,7 @@ import com.gi.cryptochat.Constants.PASSWORD_MISMATCH
 import com.gi.cryptochat.Constants.PASSWORD_WEAK
 import com.gi.cryptochat.Constants.REGISTER
 import com.gi.cryptochat.Constants.USERNAME_EMPTY
+import com.gi.cryptochat.UiState
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -27,12 +28,6 @@ data class User(
     val password: String = ""
 )
 
-data class AuthUiState(
-    val loading: Boolean = false,
-    val onSuccess: Boolean = false,
-    val error: String? = null
-)
-
 class AuthViewModel : ViewModel() {
 
     private val auth: FirebaseAuth = Firebase.auth
@@ -41,8 +36,8 @@ class AuthViewModel : ViewModel() {
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
 
-    private val _uiState = MutableStateFlow(AuthUiState())
-    val uiState: StateFlow<AuthUiState> = _uiState
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState
 
     fun clearError() {
         _uiState.update { it.copy(error = null) }

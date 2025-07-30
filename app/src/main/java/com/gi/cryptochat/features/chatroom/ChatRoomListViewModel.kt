@@ -3,6 +3,7 @@ package com.gi.cryptochat.features.chatroom
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.gi.cryptochat.Constants.CHATROOMLIST_VM
+import com.gi.cryptochat.UiState
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -11,16 +12,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
 data class ChatRoom(
-    val name: String,
-    val creatorId: String,
-    val creatorName: String,
-    val createdAt: Long
-)
-
-data class ChatRoomListUiState(
-    val loading: Boolean = false,
-    val onSuccess: Boolean = false,
-    val error: String? = null
+    val chatRoomId: String = "",
+    val chatRoomName: String = "",
+    val creatorName: String = "",
+    val creatorId: String = "",
+    val createdAt: Long = 0L
 )
 
 class ChatRoomListViewModel : ViewModel() {
@@ -28,10 +24,10 @@ class ChatRoomListViewModel : ViewModel() {
     val chatRooms: StateFlow<List<ChatRoom>> = _chatRooms
 
     private val db = Firebase.firestore
-    val currentUserId = Firebase.auth.currentUser?.uid
+    val currentUserId = Firebase.auth.currentUser?.uid ?: "Unknown Id"
 
-    private val _uiState = MutableStateFlow(ChatRoomListUiState())
-    val uiState: StateFlow<ChatRoomListUiState> = _uiState
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState
 
     init {
         fetchChatRooms()
@@ -44,60 +40,68 @@ class ChatRoomListViewModel : ViewModel() {
     fun fetchChatRooms() {
         db.collection("chatRooms").addSnapshotListener { snapshot, _ ->
             _chatRooms.value = snapshot?.documents?.map { doc ->
-                val rawCreator = doc.getString("creator")
-                val creatorId = when {
-                    rawCreator == null -> "UnknownId"
-                    rawCreator == currentUserId -> "You"
-                    else -> rawCreator
+                val creatorName = if (doc.getString("creatorId") == currentUserId) {
+                    "You"
+                } else {
+                    doc.getString("creatorName") ?: "UnknownUser"
                 }
-                Log.d(CHATROOMLIST_VM, "Document data : ${doc.data}")
                 ChatRoom(
-                    name = doc.id,
-                    creatorId = creatorId,
-                    creatorName = doc.getString("creatorName") ?: "UnknownName",
+                    chatRoomId = doc.id,
+                    chatRoomName = doc.getString("chatRoomName") ?: "UnknownUser",
+                    creatorName = creatorName,
                     createdAt = doc.getLong("createdAt") ?: 0L
                 )
             } ?: emptyList()
         }
     }
 
-    fun createChatRoom(name: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
-        if (name.isBlank()) {
-            Log.e(CHATROOMLIST_VM, "Room name is blank, calling onError")
+    fun createChatRoom(chatRoomName: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
+
+        val trimmedName = chatRoomName.trim().lowercase()
+        if (trimmedName.isEmpty()) {
+            Log.e(CHATROOMLIST_VM, "Room name is blank")
             onError("Room name cannot be empty")
             return
         }
-        val trimmedName = name.trim()
 
-        val uid = currentUserId ?: "Unknown"
-        if (uid == "Unknown") {
-            onError("User not logged in")
-            return
-        }
-        db.collection("users").document(uid).get().addOnSuccessListener { userDoc ->
-            val username = userDoc.getString("username") ?: "Unknown"
-            Log.d(CHATROOMLIST_VM, "Username is : $username")
-            db.collection("chatRooms").document(trimmedName).get().addOnSuccessListener { doc ->
-                if (doc.exists()) {
-                    Log.e(CHATROOMLIST_VM, "Room name already exists, calling onError")
-                    onError("Room name already exists")
-                } else {
-                    db.collection("chatRooms").document(trimmedName).set(
-                        ChatRoom(
-                            name = uid,
-                            creatorId = currentUserId.toString(),
-                            creatorName = username,
-                            createdAt = System.currentTimeMillis()
-                        )
-                    )
-                        .addOnSuccessListener { onSuccess() }
-                        .addOnFailureListener { onError("Failed to create room") }
+        db.collection("users").document(currentUserId.toString()).get()
+            .addOnSuccessListener { userDoc ->
+                val username = userDoc.getString("username")
+                if (username.isNullOrEmpty()) {
+                    Log.e(CHATROOMLIST_VM, "Username not found in user document")
+                    onError("Username not found")
+                    return@addOnSuccessListener
                 }
+
+                db.collection("chatRooms").document(trimmedName).get()
+                    .addOnSuccessListener { doc ->
+                        if (doc.exists()) {
+                            Log.e(CHATROOMLIST_VM, "Room name '$trimmedName' already exists")
+                            onError("'$trimmedName' already exists")
+                        } else {
+                            val chatRoom = ChatRoom(
+                                chatRoomId = doc.id,
+                                creatorName = username,
+                                creatorId = currentUserId,
+                                chatRoomName = chatRoomName,
+                                createdAt = System.currentTimeMillis()
+                            )
+                            db.collection("chatRooms").document(trimmedName)
+                                .set(chatRoom)
+                                .addOnSuccessListener {
+                                    onSuccess()
+                                }.addOnFailureListener { e ->
+                                    Log.e(CHATROOMLIST_VM, "Failed to create chat room", e)
+                                    onError("Failed to create chat room")
+                                }
+                        }
+                    }.addOnFailureListener { e ->
+                        Log.e(CHATROOMLIST_VM, "Failed to check room existence", e)
+                        onError("Failed to check if room exists")
+                    }
+            }.addOnFailureListener { e ->
+                Log.e(CHATROOMLIST_VM, "Failed to fetch user info", e)
+                onError("Failed to fetch user info")
             }
-                .addOnFailureListener {
-                    Log.e(CHATROOMLIST_VM,"Failed to check room name, calling onError",it) // Add this
-                    onError("Failed to check room name")
-                }
-        }
     }
 }
