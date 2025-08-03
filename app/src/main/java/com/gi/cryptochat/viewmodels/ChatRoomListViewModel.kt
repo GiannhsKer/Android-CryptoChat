@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class ChatRoom(
-    val chatroomName: String = "",
     val chatRoomName: String = "",
     val creatorName: String = "",
     val creatorId: String = "",
@@ -71,7 +70,6 @@ class ChatRoomListViewModel : ViewModel() {
                     doc.getString("creatorName") ?: UNKNOWN_DISPLAY_NAME
                 }
                 ChatRoom(
-                    chatroomName = doc.id,
                     chatRoomName = doc.getString("chatRoomName") ?: UNKNOWN_ROOM_NAME,
                     creatorName = creatorName,
                     createdAt = doc.getLong("createdAt") ?: 0L
@@ -102,7 +100,6 @@ class ChatRoomListViewModel : ViewModel() {
                     onError("'$trimmedName' already exists")
                 } else {
                     val chatRoom = ChatRoom(
-                        chatroomName = doc.id,
                         creatorName = currentUserDisplayName.value,
                         creatorId = currentUserId.value,
                         chatRoomName = chatRoomName,
@@ -111,10 +108,9 @@ class ChatRoomListViewModel : ViewModel() {
                     db.collection("chatRooms").document(trimmedName)
                         .set(chatRoom)
                         .addOnSuccessListener {
-                            snackbarSuccess("Chatroom created successfully")
                             onSuccess()
-                        }.addOnFailureListener { e ->
-                            Log.e(CHATROOMLIST_VM, "Failed to create chat room", e)
+                        }.addOnFailureListener { error ->
+                            Log.e(CHATROOMLIST_VM, "Failed to create chat room", error)
                             onError("Failed to create chat room")
                         }
                 }
