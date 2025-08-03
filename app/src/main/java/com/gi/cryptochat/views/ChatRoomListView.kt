@@ -1,4 +1,4 @@
-package com.gi.cryptochat.features.chatroom
+package com.gi.cryptochat.views
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -29,9 +29,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -48,23 +52,37 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gi.cryptochat.AppAlertDialog
 import com.gi.cryptochat.getDateFromLong
 import com.gi.cryptochat.gradientBrush
+import com.gi.cryptochat.viewmodels.ChatRoomListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ChatRoomListView(
     onChatRoomSelected: (String) -> Unit,
-    chatRoomListViewModel: ChatRoomListViewModel = viewModel()
+    chatRoomListViewModel: ChatRoomListViewModel = viewModel(),
 ) {
+
     val chatRooms by chatRoomListViewModel.chatRooms.collectAsState()
+    val currentUserDisplayName by chatRoomListViewModel.currentUserDisplayName.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
     var chatRoomName by remember { mutableStateOf("") }
     var errorText by remember { mutableStateOf("") }
     val uiState by chatRoomListViewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     fun resetDialogState() {
         showDialog = false
         chatRoomName = ""
         errorText = ""
+    }
+
+    LaunchedEffect(Unit) {
+        chatRoomListViewModel.snackbarMessage.collect { message ->
+            snackbarHostState.showSnackbar(
+                message = message,
+                duration = SnackbarDuration.Long,
+                withDismissAction = true
+            )
+        }
     }
 
     Scaffold(
@@ -99,45 +117,56 @@ fun ChatRoomListView(
                     contentDescription = "Create Chat Room",
                 )
             }
-        }
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { padding ->
-        Text("Welcome $")
-        LazyColumn(
-            contentPadding = PaddingValues(
-                top = padding.calculateTopPadding() + 16.dp,
-                start = 16.dp,
-                end = 16.dp,
-                bottom = 16.dp
-            ),
-            verticalArrangement = Arrangement.spacedBy(space = 16.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
         ) {
-            items(chatRooms) { room ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clickable { onChatRoomSelected(room.chatRoomId) }
-                        .clip(RoundedCornerShape(16.dp))
-                        .drawWithCache {
-                            onDrawBehind { drawRect(gradientBrush) }
-                        },
-                    colors = CardDefaults.cardColors(containerColor = Color.Transparent)
-                )
-                {
-                    Text(
-                        room.chatRoomName,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color.White,
+            Text(
+                text = "Welcome, $currentUserDisplayName",
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            LazyColumn(
+                contentPadding = PaddingValues(
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = 16.dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(space = 16.dp)
+            ) {
+                items(chatRooms) { room ->
+                    Card(
                         modifier = Modifier
-                            .padding(16.dp)
+                            .fillMaxSize()
+                            .clickable { onChatRoomSelected(room.chatRoomName) }
+                            .clip(RoundedCornerShape(16.dp))
+                            .drawWithCache {
+                                onDrawBehind { drawRect(gradientBrush) }
+                            },
+                        colors = CardDefaults.cardColors(containerColor = Color.Transparent)
                     )
-                    Text(
-                        "Created at ${getDateFromLong(room.createdAt)} by ${room.creatorName}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.White.copy(alpha = 0.8f),
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .align(Alignment.End)
-                    )
+                    {
+                        Text(
+                            room.chatRoomName,
+                            style = MaterialTheme.typography.titleLarge,
+                            color = Color.White,
+                            modifier = Modifier
+                                .padding(16.dp)
+                        )
+                        Text(
+                            "Created at ${getDateFromLong(room.createdAt)} by ${room.creatorName}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.White.copy(alpha = 0.8f),
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .align(Alignment.End)
+                        )
+                    }
                 }
             }
         }

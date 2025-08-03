@@ -18,45 +18,62 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+// Global Constants used throughout the app
 object Constants {
 
-    //    Navigation properties
+    //    Destination properties
     const val AUTH_OPTION = "AuthOption"
     const val CHATROOM_LIST = "ChatRoomList"
-    const val CHATROOM = "ChatRoom/{roomId}"
-    const val LOG_IN = "LogIn"
+    const val CHATROOM = "ChatRoom/{roomName}"
+    const val LOGIN = "LogIn"
     const val REGISTER = "Register"
 
-    //    Chat object properties
-    const val MESSAGES = "messages"
-    const val MESSAGE = "message"
-    const val SENT_BY = "sent_by"
-    const val SENT_ON = "sent_on"
-    const val IS_CURRENT_USER = "is_current_user"
-
     //    Error Messages
-    const val EMAIL_EMPTY = "Please enter your email."
-    const val EMAIL_INVALID = "Email is invalid."
-    const val USERNAME_EMPTY = "Please enter your username."
-    const val PASSWORD_EMPTY = "Please enter a password."
+    const val EMAIL_EMPTY = "Please enter your email"
+    const val EMAIL_INVALID = "Email is invalid"
+    const val USERNAME_EMPTY = "Please enter your username"
+    const val USERNAME_INVALID = "Username is invalid"
+    const val USERNAME_TAKEN = "Username is taken"
+    const val PASSWORD_EMPTY = "Please enter a password"
     const val PASSWORD_WEAK =
         "Password should be at least 8 characters long and include letters, numbers, and symbols."
     const val PASSWORD_MISMATCH = "Password and confirm password do not match."
 
     //    Classes for debug
-    const val AUTHENTICATION_VM = "Authentication VM"
-    const val CHATROOMLIST_VM = "ChatRoomList VM"
+    const val NAV_COMPOSE_APP = "NavComposeApp"
+    const val AUTHENTICATION_VM = "AuthenticationVM"
+    const val CHATROOMLIST_VM = "ChatRoomListVM"
+    const val CHAT_VM = "ChatVM"
+    const val CHAT_VIEW = "ChatView"
+    const val CHATROOMLIST_VIEW = "ChatRoomListView"
+    const val AUTHENTICATION_VIEW = "AuthenticationView"
+
+    // etc.
+    const val UNKNOWN_DISPLAY_NAME = "UnknownName"
+    const val UNKNOWN_ID = "UnknownId"
+    const val UNKNOWN_ROOM_NAME = "UnknownRoomName"
+
 }
 
+// Used for coloring screens
 val gradientBrush = Brush.horizontalGradient(
     colors = listOf(Color(0xFF2196F3), Color(0xFF2575FC))
 )
 
+// Ui state is an object used to update the screen when something is loaded or an error occurs
+data class UiState(
+    val loading: Boolean = false,
+    val onSuccess: Boolean = false,
+    val error: String? = null
+)
+
+// Gets status' bar height, so the content does not overlap with screen's status bar (top row of the screen)
 @Composable
 fun getStatusBarHeight(): Dp {
     return WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 }
 
+// Used to make the icons appear white
 @Composable
 fun SetStatusBarAppearance(useDarkIcons: Boolean) {
     val view = LocalView.current
@@ -68,6 +85,7 @@ fun SetStatusBarAppearance(useDarkIcons: Boolean) {
     }
 }
 
+// Used to alert user about errors or prompt to create a new chat room
 @Composable
 fun AppAlertDialog(
     message: String,
@@ -85,9 +103,7 @@ fun AppAlertDialog(
     )
 }
 
-@Composable
-fun getDateFromLong(timestamp : Long) : String{
-    val date = Date(timestamp)
-    val formatter = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
-    return formatter.format(date)
+// Used to convert date in Long to Date String
+fun getDateFromLong(timestamp: Long): String {
+    return SimpleDateFormat("dd MMM yy, HH:mm", Locale.getDefault()).format(Date(timestamp))
 }

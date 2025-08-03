@@ -1,4 +1,4 @@
-package com.gi.cryptochat.features.authentication
+package com.gi.cryptochat.views
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -43,7 +43,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -53,6 +52,7 @@ import com.gi.cryptochat.AppAlertDialog
 import com.gi.cryptochat.Constants.REGISTER
 import com.gi.cryptochat.R
 import com.gi.cryptochat.SetStatusBarAppearance
+import com.gi.cryptochat.viewmodels.AuthViewModel
 import com.gi.cryptochat.getStatusBarHeight
 import com.gi.cryptochat.gradientBrush
 
@@ -64,13 +64,13 @@ fun RegisterView(
 ) {
     val loading: Boolean by authViewModel.loading.collectAsState(false)
 
-    val confirm = remember { mutableStateOf(TextFieldValue()) }
     var showDialog = remember { mutableStateOf(false) }
     val errorMessage = remember { mutableStateOf("") }
 
     var username by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
+    var confirmPassword by rememberSaveable { mutableStateOf("") }
     var isChecked by rememberSaveable { mutableStateOf(false) }
     val scrollState = rememberScrollState()
     val uiState by authViewModel.uiState.collectAsState()
@@ -169,8 +169,8 @@ fun RegisterView(
                     )
 
                     OutlinedTextField(
-                        value = confirm.value.text,
-                        onValueChange = { confirm.value = TextFieldValue(it) },
+                        value = confirmPassword,
+                        onValueChange = { confirmPassword = it },
                         label = { Text("Confirm Password") },
                         modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -201,17 +201,18 @@ fun RegisterView(
                             .fillMaxWidth()
                             .padding(vertical = 12.dp)
                             .clickable(onClick = {
-                                errorMessage.value =
-                                    authViewModel.validateTextFields(
+                                authViewModel.validateAndRegisterUser(
                                         email,
                                         username,
                                         password,
-                                        confirmPassword = confirm
-                                    )
-                                if (errorMessage.value.isBlank()) {
-                                    authViewModel.authUser(username, email, password, REGISTER)
-                                } else {
-                                    showDialog.value = !showDialog.value
+                                        confirmPassword
+                                    ) { error ->
+                                    if (error != null) {
+                                        errorMessage.value = error
+                                        showDialog.value = !showDialog.value
+                                    } else {
+                                        authViewModel.authUser(username, email, password, REGISTER)
+                                    }
                                 }
                             }),
                         contentAlignment = Alignment.Center

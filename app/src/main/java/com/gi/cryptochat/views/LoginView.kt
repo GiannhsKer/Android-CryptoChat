@@ -1,9 +1,18 @@
-package com.gi.cryptochat.features.authentication
+package com.gi.cryptochat.views
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -41,9 +50,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gi.cryptochat.AppAlertDialog
-import com.gi.cryptochat.Constants.LOG_IN
+import com.gi.cryptochat.Constants.LOGIN
 import com.gi.cryptochat.R
 import com.gi.cryptochat.SetStatusBarAppearance
+import com.gi.cryptochat.viewmodels.AuthViewModel
 import com.gi.cryptochat.getStatusBarHeight
 import com.gi.cryptochat.gradientBrush
 
@@ -175,7 +185,7 @@ fun LoginView(
                                     username = "",
                                     email = email,
                                     password = password,
-                                    action = LOG_IN)
+                                    action = LOGIN)
                             }),
                         contentAlignment = Alignment.Center
                     ) {
